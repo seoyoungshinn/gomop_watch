@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import model.*
+
 import utils.Constant.API.LOG
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -227,15 +228,15 @@ class MainActivity : Activity() {
 
     private fun getMyLocation(lat: Double, lon: Double) {
         //현재 위치를 싱글톤 객체에 저장
-        myLocation.lat =lat
-        myLocation.lon = lon
+        MyLocation.lat =lat
+        MyLocation.lon = lon
         Log.d("로그","위치받아왔음")
         sendMyLocation(uid!!);
     }
 
     private fun sendMyLocation(uid:String) {
         //싱글톤 객체에 저장된 나의 위치를 DB에 업데이트
-        firestore?.collection("uid")?.document(uid)?.set(myLocation)
+        firestore?.collection("uid")?.document(uid)?.set(MyLocation)
         Log.d("로그","DB에위치업데이트완료")
     }
 
@@ -260,17 +261,57 @@ class MainActivity : Activity() {
             if (task.isSuccessful) {
                 Log.d("파이어베이스로그인", "로그인 성공" + "${uid}")
                 Log.d("시간",LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                getDataFromDB()
             } else {
                 Log.d("파이어베이스로그인", "로그인 실패" + "${uid}")
             }
         }
     }//End of firebaseLogin()
 
+    private fun getDataFromDB() {
+        /*//FireBase에서 알고리즘 가중치를 불러와 데이터스냅샷 형태로 저장후 잘라서 싱글톤객체 Preference에 저장.
+        var snapshotData: Map<String, Any>
+        val dbData = firestore!!.collection("uid").document("${uid}")
+        dbData.get()
+            .addOnSuccessListener { doc ->
+                if (doc != null) {
 
+                    snapshotData = doc.data as Map<String, Any>
+                    Log.d("로그MainActivity-algorithmWeightFromDB()","알고리즘 가중치 DB에서 불러와서 셋팅합니다.")
 
+                    MyLocation.followings = "${snapshotData.get("followings")}" as Map<String,String>
+                    MyLocation.followers = "${snapshotData.get("followers")}" as Map<String,String>
+                    MyLocation.id = "${snapshotData.get("id")}" as String
+                    Log.d("로그: DB송신결과", "followings: "+ followings +"/ followers: "+ followers+ "/ id: "+ id);
 
+                    // Preference.score = "${snapshotData.get("score")}".toInt()
 
+                } else {
+                    Log.d("로그에러 : 알고리즘 가중치값 DB에서 불러오기", "No such document")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d("로그에러: 알고리즘 가중치값 DB에서 불러오기", "get failed with ", exception)
+            }*/
 
+        var snapshotData: Map<String, Any>
+        var followings: Map<String, String>
+        var followers: Map<String, String>
+        var dtr = firestore?.collection("uid")?.document(uid.toString())
+        dtr?.get()?.addOnSuccessListener { doc ->
+            if (doc != null) {
+                snapshotData = doc.data as Map<String, Any>
+                followers = snapshotData.get("followers") as Map<String, String>
+                followings = snapshotData.get("followings") as Map<String, String>
+                Log.d("로그 snapshotData: ", snapshotData.toString())
+                Log.d("로그 followers: ", followers.toString())
+                Log.d("로그 followings: ", followings.toString())
+                MyLocation.followers = followers
+                MyLocation.followings = followings
+                MyLocation.id = snapshotData.get("id") as String
+            }
+        }
+    }
 
 
     /*----------------------------!안 건들여도 됨!------------------------------------------
