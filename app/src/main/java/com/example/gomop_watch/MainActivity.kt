@@ -83,6 +83,10 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        setTTS()        //TTS세팅 및 초기화
+
+
+
         //FireBase환경세팅
         Log.d("firebase","파이어베이스 환경세팅")
         auth = Firebase.auth
@@ -93,7 +97,8 @@ class MainActivity : Activity() {
 
 
 
-        setTTS()        //TTS세팅 및 초기화
+
+
 
 
         //화면이 꺼지지 않게
@@ -172,7 +177,7 @@ class MainActivity : Activity() {
                     modified++
                     if(modified==1){
                         //현재위치가 조정 완료되었다는 tts
-                        ttsSpeak("버튼을 누르면 내 위치를 SNS에 업데이트합니다")
+                        ttsSpeak("실시간 위치 파악중입니다. 버튼을 누르면 내 위치를 SNS에 업데이트합니다")
                         val effect = VibrationEffect.createOneShot(500, 100)
                         vibrator.vibrate(effect)
                     }
@@ -261,39 +266,15 @@ class MainActivity : Activity() {
             if (task.isSuccessful) {
                 Log.d("파이어베이스로그인", "로그인 성공" + "${uid}")
                 Log.d("시간",LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                getDataFromDB()
+                //getDataFromDB()
             } else {
                 Log.d("파이어베이스로그인", "로그인 실패" + "${uid}")
             }
         }
     }//End of firebaseLogin()
 
+    //이제 안씀
     private fun getDataFromDB() {
-        /*//FireBase에서 알고리즘 가중치를 불러와 데이터스냅샷 형태로 저장후 잘라서 싱글톤객체 Preference에 저장.
-        var snapshotData: Map<String, Any>
-        val dbData = firestore!!.collection("uid").document("${uid}")
-        dbData.get()
-            .addOnSuccessListener { doc ->
-                if (doc != null) {
-
-                    snapshotData = doc.data as Map<String, Any>
-                    Log.d("로그MainActivity-algorithmWeightFromDB()","알고리즘 가중치 DB에서 불러와서 셋팅합니다.")
-
-                    MyLocation.followings = "${snapshotData.get("followings")}" as Map<String,String>
-                    MyLocation.followers = "${snapshotData.get("followers")}" as Map<String,String>
-                    MyLocation.id = "${snapshotData.get("id")}" as String
-                    Log.d("로그: DB송신결과", "followings: "+ followings +"/ followers: "+ followers+ "/ id: "+ id);
-
-                    // Preference.score = "${snapshotData.get("score")}".toInt()
-
-                } else {
-                    Log.d("로그에러 : 알고리즘 가중치값 DB에서 불러오기", "No such document")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.d("로그에러: 알고리즘 가중치값 DB에서 불러오기", "get failed with ", exception)
-            }*/
-
         var snapshotData: Map<String, Any>
         var followings: Map<String, String>
         var followers: Map<String, String>
