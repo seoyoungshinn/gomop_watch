@@ -280,7 +280,7 @@ class MainActivity : Activity() {
         MyLocation.lat =lat
         MyLocation.lon = lon
         Log.d("로그","위치받아왔음")
-        MyLocation.updateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        MyLocation.updateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("MM-dd HH:mm"))
         MyLocation.id = id!!
         sendMyLocation(uid!!);
     }
