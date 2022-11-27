@@ -266,7 +266,7 @@ class MainActivity : Activity() {
             if (task.isSuccessful) {
                 Log.d("파이어베이스로그인", "로그인 성공" + "${uid}")
                 Log.d("시간",LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                //getDataFromDB()
+                getDataFromDB()
             } else {
                 Log.d("파이어베이스로그인", "로그인 실패" + "${uid}")
             }
@@ -282,14 +282,16 @@ class MainActivity : Activity() {
         dtr?.get()?.addOnSuccessListener { doc ->
             if (doc != null) {
                 snapshotData = doc.data as Map<String, Any>
-                followers = snapshotData.get("followers") as Map<String, String>
-                followings = snapshotData.get("followings") as Map<String, String>
+             //   followers = snapshotData.get("followers") as Map<String, String>
+             //   followings = snapshotData.get("followings") as Map<String, String>
                 Log.d("로그 snapshotData: ", snapshotData.toString())
-                Log.d("로그 followers: ", followers.toString())
-                Log.d("로그 followings: ", followings.toString())
-                MyLocation.followers = followers
-                MyLocation.followings = followings
+             //   Log.d("로그 followers: ", followers.toString())
+             //   Log.d("로그 followings: ", followings.toString())
+           //     MyLocation.followers = followers
+             //   MyLocation.followings = followings
                 MyLocation.id = snapshotData.get("id") as String
+                MyLocation.lat = snapshotData.get("lat") as Double
+                MyLocation.lon = snapshotData.get("lon") as Double
             }
         }
     }
