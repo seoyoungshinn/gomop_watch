@@ -48,6 +48,7 @@ class MainActivity : Activity() {
     // private val firebaseDatabase: FirebaseDatabase = FirebaseDatabase.getInstance()     //FireBase RealTime
     // private val databaseReference: DatabaseReference = firebaseDatabase.reference       //FireBase RealTime
     private var uid : String? = null
+    private var id :String? = null
 
 
 
@@ -130,18 +131,10 @@ class MainActivity : Activity() {
         startLocationUpdates()
 
 
-/*
-        PreferenceActicity 테스트용
-        val intent = Intent(this, SetPreferenceActivity::class.java)
-        startActivityForResult(intent, 1000000)
-*/
 
-//        btn.setOnClickListener {
-//            val intent = Intent(this, SetPreferenceActivity::class.java)
-//            startActivityForResult(intent, 1000000)
-//        }
     }
 
+    //위치를 1초에 한번씩 갱신한다
     private fun startLocationUpdates() {
         if (checkPermissionForLocation(this)) {
             if (ActivityCompat.checkSelfPermission(
@@ -231,30 +224,12 @@ class MainActivity : Activity() {
 
     }
 
-    private fun getMyLocation(lat: Double, lon: Double) {
-        //현재 위치를 싱글톤 객체에 저장
-        MyLocation.lat =lat
-        MyLocation.lon = lon
-        Log.d("로그","위치받아왔음")
-        sendMyLocation(uid!!);
-    }
-
-    private fun sendMyLocation(uid:String) {
-        //싱글톤 객체에 저장된 나의 위치를 DB에 업데이트
-        firestore?.collection("uid")?.document(uid)?.set(MyLocation)
-        Log.d("로그","DB에위치업데이트완료")
-    }
 
     //다른 Activity로부터 결과값 받기
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
 
     }
-
-
-
-
-
 
 
     /////////////////////////////////////////////////////////////////////////////
@@ -289,12 +264,33 @@ class MainActivity : Activity() {
              //   Log.d("로그 followings: ", followings.toString())
            //     MyLocation.followers = followers
              //   MyLocation.followings = followings
+                id  = snapshotData.get("id") as String
+                Log.d("로그 :::", id!!)
+                MyLocation.id = id?:"loading"
                 MyLocation.id = snapshotData.get("id") as String
                 MyLocation.lat = snapshotData.get("lat") as Double
                 MyLocation.lon = snapshotData.get("lon") as Double
+                MyLocation.updateTime = snapshotData.get("updateTime") as String
             }
         }
     }
+
+    private fun getMyLocation(lat: Double, lon: Double) {
+        //현재 위치를 싱글톤 객체에 저장
+        MyLocation.lat =lat
+        MyLocation.lon = lon
+        Log.d("로그","위치받아왔음")
+        MyLocation.updateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        MyLocation.id = id!!
+        sendMyLocation(uid!!);
+    }
+
+    private fun sendMyLocation(uid:String) {
+        //싱글톤 객체에 저장된 나의 위치를 DB에 업데이트
+        firestore?.collection("uid")?.document(uid)?.set(MyLocation)
+        Log.d("로그","DB에위치업데이트완료")
+    }
+
 
 
     /*----------------------------!안 건들여도 됨!------------------------------------------
